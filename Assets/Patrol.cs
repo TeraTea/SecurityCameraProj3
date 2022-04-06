@@ -1,13 +1,16 @@
-// Patrol.cs
+ // Patrol.cs
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
-[RequireComponent(typeof(AIFoV))]
 public class Patrol : MonoBehaviour {
 
     public Transform[] points;
     public float reactionTime = 1;      // how long can we see the player before springing into action.
+
+    public enum state {Patrolling, Chasing, Searching};
+    public state currentState = state.Patrolling;
+
     private int destPoint = 0;
     private NavMeshAgent agent;
 
@@ -18,10 +21,10 @@ public class Patrol : MonoBehaviour {
         agent = GetComponent<NavMeshAgent>();
         fov = GetComponent<AIFoV>();
 
-        // Disabling auto-braking allows for continuous movement
-        // between points (ie, the agent doesn't slow down as it
-        // approaches a destination point).
-        // agent.autoBraking = false;
+            // Disabling auto-braking allows for continuous movement
+            // between points (ie, the agent doesn't slow down as it
+            // approaches a destination point).
+        agent.autoBraking = false;
 
         GotoNextPoint();
     }
@@ -42,31 +45,65 @@ public class Patrol : MonoBehaviour {
 
     private float eyesOnPlayerTimer = 0;
 
-    void Update () {
+    void Patrolling() {
         if(fov.canSeePlayer == true) {
             eyesOnPlayerTimer += Time.deltaTime;
-            Debug.Log("EyesOnPlayerTimer: " + eyesOnPlayerTimer);
             if(eyesOnPlayerTimer > reactionTime) {
-                agent.destination = fov.player.position;
-                return;     // don't look at anything else in the Update function.
+                currentState = state.Chasing;
+                return;
             }
-        }
+        } 
         else {
             //reset the eyesOnPlayerTimer if we lose sight of the player.
             eyesOnPlayerTimer = 0;
         }
-
-        
-
         // Choose the next destination point when the agent gets
         // close to the current one.
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
-            StartCoroutine(WaitAtPatrolPoint());
+        if (!agent.pathPending && agent.remainingDistance < 0.5f) {
+            StartCoroutine(WaitAtPatrolPoint()); // this is searching. go to the searching state.
+        }
+    }
+
+    void Chasing() {
+        agent.destination = fov.player.position;
+    }
+
+    void Searching() {
+        
+    }
+
+
+
+    void Update () {
+        switch(currentState) {
+            case state.Patrolling: Patrolling(); break;
+            case state.Chasing: Chasing(); break;
+            case state.Searching: Searching(); break;
+        }
+
+
+
+
+
+
+
+
+
+        if(fov.canSeePlayer == true) {
+            eyesOnPlayerTimer += Time.deltaTime;
+            if(eyesOnPlayerTimer > reactionTime) {
+                agent.destination = fov.player.position;
+                return;
+            }
+        } else {
+            //reset the eyesOnPlayerTimer if we lose sight of the player.
+            eyesOnPlayerTimer = 0;
+        }
     }
 
     IEnumerator WaitAtPatrolPoint() {
         // play the waiting animation
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0);
         GotoNextPoint();
     }
 }
