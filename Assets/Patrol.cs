@@ -80,7 +80,6 @@ public class Patrol : MonoBehaviour {
     void Chasing() {
         agent.destination = fov.player.position;
         float distance = Vector3.Distance(this.transform.position, fov.player.position);
-        Debug.Log("Distance " + distance);
         if(distance > fov.sightDistance) {
             //the AI will continue to its destination, then go to the next patrol point
             currentState = state.Patrolling;
@@ -90,17 +89,23 @@ public class Patrol : MonoBehaviour {
 
     void Searching() {
         if(!waitingAtPoint){
+            wait = WaitAtPatrolPoint();
             StartCoroutine(wait); // this is searching
 
         }
 
-        if(fov.canSeePlayer == true) {
+        LookForPlayer();
+    }
+
+    void LookForPlayer() {
+            if(fov.canSeePlayer == true) {
             eyesOnPlayerTimer += Time.deltaTime;
 
             if(eyesOnPlayerTimer > reactionTime) {
                 currentState = state.Chasing;
                 eyesOnPlayerTimer = 0;
                 StopCoroutine(wait);        // stop animating 
+                wait = null;
                 eyePivot.rotation = looks[0].rotation;      // sets eye to face foward.
                 waitingAtPoint = false;     // resetting the coroutine.
                 return;
@@ -111,7 +116,6 @@ public class Patrol : MonoBehaviour {
             eyesOnPlayerTimer = 0;
         }
     }
-
 
 
     void Update () {

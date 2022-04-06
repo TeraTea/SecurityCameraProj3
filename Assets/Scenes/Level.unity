@@ -314,6 +314,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -15.324, y: 0, z: 0}
+--- !u!1 &53758454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 53758455}
+  m_Layer: 0
+  m_Name: EyePivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &53758455
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53758454}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 385306128}
+  - {fileID: 828629015}
+  m_Father: {fileID: 2144796850}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &115737425
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,11 +589,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385306127}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.493, z: 0.595}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.391, z: 0.562}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 2144796850}
+  m_Father: {fileID: 53758455}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &408564957
@@ -601,6 +633,7 @@ MonoBehaviour:
   player: {fileID: 849078726}
   fieldOfView: 40
   sightDistance: 10
+  emitter: {fileID: 0}
   rend: {fileID: 1564508534}
   canSeePlayer: 1
 --- !u!114 &408564959
@@ -619,7 +652,16 @@ MonoBehaviour:
   - {fileID: 829977043}
   - {fileID: 1118377857}
   reactionTime: 2
+  waitAtPointInterval: 2
   currentState: 0
+  eyePivot: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  looks: []
 --- !u!195 &408564960
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1545,10 +1587,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 828629012}
   m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0.459}
+  m_LocalPosition: {x: 0, y: 0.42900002, z: 0.49199963}
   m_LocalScale: {x: 0.30586, y: 0.08776653, z: 0.30586}
   m_Children: []
-  m_Father: {fileID: 2144796850}
+  m_Father: {fileID: 53758455}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &829977039
@@ -2195,6 +2237,7 @@ MonoBehaviour:
   player: {fileID: 849078726}
   fieldOfView: 40
   sightDistance: 10
+  emitter: {fileID: 0}
   rend: {fileID: 627508266}
   canSeePlayer: 1
 --- !u!114 &1164674615
@@ -2213,7 +2256,16 @@ MonoBehaviour:
   - {fileID: 19320318}
   - {fileID: 769536926}
   reactionTime: 2
+  waitAtPointInterval: 2
   currentState: 0
+  eyePivot: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  looks: []
 --- !u!195 &1164674616
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2718,6 +2770,7 @@ MonoBehaviour:
   player: {fileID: 849078726}
   fieldOfView: 40
   sightDistance: 10
+  emitter: {fileID: 0}
   rend: {fileID: 1357401311}
   canSeePlayer: 1
 --- !u!114 &1368015910
@@ -2736,7 +2789,16 @@ MonoBehaviour:
   - {fileID: 1754334943}
   - {fileID: 1686465664}
   reactionTime: 2
+  waitAtPointInterval: 2
   currentState: 0
+  eyePivot: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  looks: []
 --- !u!195 &1368015911
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3895,6 +3957,7 @@ MonoBehaviour:
   player: {fileID: 849078726}
   fieldOfView: 45
   sightDistance: 10
+  emitter: {fileID: 0}
   rend: {fileID: 828629013}
   canSeePlayer: 0
 --- !u!114 &2144796845
@@ -3915,7 +3978,34 @@ MonoBehaviour:
   - {fileID: 957385336}
   - {fileID: 1287458206}
   reactionTime: 1
+  waitAtPointInterval: 2
   currentState: 0
+  eyePivot: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  looks: []
 --- !u!195 &2144796846
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -4012,8 +4102,7 @@ Transform:
   m_LocalPosition: {x: 15.61, y: 1.09, z: -9.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 385306128}
-  - {fileID: 828629015}
+  - {fileID: 53758455}
   m_Father: {fileID: 0}
   m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
