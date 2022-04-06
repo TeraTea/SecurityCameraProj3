@@ -10,6 +10,7 @@ public class Patrol : MonoBehaviour {
 
     public enum state {Patrolling, Chasing, Searching};
     public state currentState = state.Patrolling;
+    state lastFrameState; // keeps track of state changes.
 
     private int destPoint = 0;
     private NavMeshAgent agent;
@@ -20,6 +21,8 @@ public class Patrol : MonoBehaviour {
     void Start () {
         agent = GetComponent<NavMeshAgent>();
         fov = GetComponent<AIFoV>();
+
+        lastFrameState = currentState;
 
             // Disabling auto-braking allows for continuous movement
             // between points (ie, the agent doesn't slow down as it
@@ -50,6 +53,7 @@ public class Patrol : MonoBehaviour {
             eyesOnPlayerTimer += Time.deltaTime;
             if(eyesOnPlayerTimer > reactionTime) {
                 currentState = state.Chasing;
+                eyesOnPlayerTimer = 0;
                 return;
             }
         } 
@@ -60,16 +64,27 @@ public class Patrol : MonoBehaviour {
         // Choose the next destination point when the agent gets
         // close to the current one.
         if (!agent.pathPending && agent.remainingDistance < 0.5f) {
-            StartCoroutine(WaitAtPatrolPoint()); // this is searching. go to the searching state.
+            currentState = state.Searching; // this is searching. go to the searching state.
         }
     }
 
     void Chasing() {
         agent.destination = fov.player.position;
+        float distance = Vector3.Distance(this.transform.position, fov.player.position);
+        Debug.Log("Distance " + distance);
+        if(distance > fov.sightDistance) {
+            //the AI will continue to its destination, then go to the next patrol point
+            currentState = state.Patrolling;
+        }
     }
 
+    bool waitingAtPoint = false;
+
     void Searching() {
-        
+        if(!waitingAtPoint){
+            StartCoroutine(WaitAtPatrolPoint());
+            currentState = state.Patrolling;
+        }
     }
 
 
@@ -81,29 +96,19 @@ public class Patrol : MonoBehaviour {
             case state.Searching: Searching(); break;
         }
 
+        if(lastFrameState != currentState) {
+            Debug.Log("State has changed.");
+            Debug.Log("Agent remaining Distance : " + agent.remainingDistance);
 
-
-
-
-
-
-
-
-        if(fov.canSeePlayer == true) {
-            eyesOnPlayerTimer += Time.deltaTime;
-            if(eyesOnPlayerTimer > reactionTime) {
-                agent.destination = fov.player.position;
-                return;
-            }
-        } else {
-            //reset the eyesOnPlayerTimer if we lose sight of the player.
-            eyesOnPlayerTimer = 0;
         }
+        lastFrameState = currentState;
     }
 
     IEnumerator WaitAtPatrolPoint() {
+        waitingAtPoint = true;
         // play the waiting animation
         yield return new WaitForSeconds(0);
         GotoNextPoint();
+        waitingAtPoint = false;
     }
 }

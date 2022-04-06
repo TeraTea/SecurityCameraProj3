@@ -6,6 +6,7 @@ public class AIFoV : MonoBehaviour
 {
     public Transform player;
     public float fieldOfView = 45;
+    public float sightDistance = 10f;
     Transform emitter;
 
     public Renderer rend;
@@ -38,7 +39,7 @@ public class AIFoV : MonoBehaviour
 
         if(angle < fieldOfView) {
             //draw a ray
-            if(Physics.Raycast(emitter.position, rayDirection, out hit, 30f)) {
+            if(Physics.Raycast(emitter.position, rayDirection, out hit, sightDistance)) {
                 if(hit.collider.CompareTag("Player")) {
                     canSeePlayer = true;
                     Debug.DrawRay(emitter.position, rayDirection, Color.green);
