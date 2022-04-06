@@ -7,7 +7,7 @@ public class AIFoV : MonoBehaviour
     public Transform player;
     public float fieldOfView = 45;
     public float sightDistance = 10f;
-    Transform emitter;
+    public Transform emitter;
 
     public Renderer rend;
 
@@ -16,7 +16,7 @@ public class AIFoV : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        emitter = transform.GetChild(0);
+        if(emitter == null) emitter = transform.GetChild(0);
     }
 
     // Update is called once per frame
@@ -65,3 +65,4 @@ public class AIFoV : MonoBehaviour
 
     }
 }
+

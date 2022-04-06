@@ -1,12 +1,14 @@
- // Patrol.cs
+  // Patrol.cs
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Collections.Generic; // for lists
 
 public class Patrol : MonoBehaviour {
 
     public Transform[] points;
     public float reactionTime = 1;      // how long can we see the player before springing into action.
+    public float waitAtPointInterval = 2f;
 
     public enum state {Patrolling, Chasing, Searching};
     public state currentState = state.Patrolling;
@@ -14,8 +16,10 @@ public class Patrol : MonoBehaviour {
 
     private int destPoint = 0;
     private NavMeshAgent agent;
-
+    bool waitingAtPoint = false;
     private AIFoV fov;
+
+    IEnumerator wait;
 
 
     void Start () {
@@ -24,10 +28,13 @@ public class Patrol : MonoBehaviour {
 
         lastFrameState = currentState;
 
+        wait = WaitAtPatrolPoint();
+
             // Disabling auto-braking allows for continuous movement
             // between points (ie, the agent doesn't slow down as it
             // approaches a destination point).
-        agent.autoBraking = false;
+            //agent.autoBraking = false;
+            
 
         GotoNextPoint();
     }
@@ -44,6 +51,8 @@ public class Patrol : MonoBehaviour {
         // Choose the next point in the array as the destination,
         // cycling to the start if necessary.
         destPoint = (destPoint + 1) % points.Length;
+
+        currentState = state.Patrolling;
     }
 
     private float eyesOnPlayerTimer = 0;
@@ -78,12 +87,28 @@ public class Patrol : MonoBehaviour {
         }
     }
 
-    bool waitingAtPoint = false;
 
     void Searching() {
         if(!waitingAtPoint){
-            StartCoroutine(WaitAtPatrolPoint());
-            currentState = state.Patrolling;
+            StartCoroutine(wait); // this is searching
+
+        }
+
+        if(fov.canSeePlayer == true) {
+            eyesOnPlayerTimer += Time.deltaTime;
+
+            if(eyesOnPlayerTimer > reactionTime) {
+                currentState = state.Chasing;
+                eyesOnPlayerTimer = 0;
+                StopCoroutine(wait);        // stop animating 
+                eyePivot.rotation = looks[0].rotation;      // sets eye to face foward.
+                waitingAtPoint = false;     // resetting the coroutine.
+                return;
+            }
+        } 
+        else {
+            //reset the eyesOnPlayerTimer if we lose sight of the player.
+            eyesOnPlayerTimer = 0;
         }
     }
 
@@ -98,16 +123,52 @@ public class Patrol : MonoBehaviour {
 
         if(lastFrameState != currentState) {
             Debug.Log("State has changed.");
-            Debug.Log("Agent remaining Distance : " + agent.remainingDistance);
 
         }
         lastFrameState = currentState;
     }
 
+    public Transform eyePivot;
+    public AnimationCurve curve;
+    public List<Transform> looks = new List<Transform>();
+
     IEnumerator WaitAtPatrolPoint() {
         waitingAtPoint = true;
         // play the waiting animation
-        yield return new WaitForSeconds(0);
+        //yield return new WaitForSeconds(waitAtPointInterval);
+
+        //stop moving
+            // assume this already happens. if not, force it.
+        //look left and wait
+        float timer = 0;
+        while(timer < 1) {
+            eyePivot.rotation = Quaternion.Lerp(looks[0].rotation, looks[1].rotation, curve.Evaluate(timer));
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1);
+
+        //look right and wait
+        timer = 0;
+        while(timer < 1) {
+            eyePivot.rotation = Quaternion.Lerp(looks[1].rotation, looks[2].rotation, curve.Evaluate(timer));
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1);
+
+        //look forward and go to next point.
+        timer = 0;
+        while(timer < 1) {
+            eyePivot.rotation = Quaternion.Lerp(looks[2].rotation, looks[0].rotation, curve.Evaluate(timer));
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+
+
         GotoNextPoint();
         waitingAtPoint = false;
     }
